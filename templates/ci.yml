@@ -1,0 +1,28 @@
+name: CI - {{ name }}
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: '18.x'
+    - name: Run dependency installation
+      run: npm ci
+    {% if dep_check == true %}
+    - name: Run Dependency Check
+      run: npm audit
+    {% endif %}
+    {% if ci == true %}
+    - name: Run tests
+      run: npm run test
+    {% endif %}

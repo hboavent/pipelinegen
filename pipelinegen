@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+
+import sys
+from jinja2 import Environment, FileSystemLoader
+import argparse
+
+def process_file(file_path, args):
+    environment = Environment(loader=FileSystemLoader("templates/"))
+    template = environment.get_template(file_path)
+    content = template.render(args)
+    content = "".join([s for s in content.splitlines(True) if s.strip()])
+
+    return content
+
+def main():
+    parser = argparse.ArgumentParser(prog='PipelineGen',
+                    description='Creates custom pipelines for CI/CD')
+    parser.add_argument('template', help='Path to template file', type=str)
+    parser.add_argument('--name', metavar='', help='Name of pipeline', required=True, type=str)
+    parser.add_argument('--ci', metavar='', help='Enable CI', default=False, type=bool)
+    parser.add_argument('--dep_check', metavar='', help='Enable Dependency check', default=False, type=bool)
+    args = parser.parse_args()
+
+    new_contents = process_file(args.template, vars(args))
+    print(new_contents)
+
+if __name__ == "__main__":
+    main()
